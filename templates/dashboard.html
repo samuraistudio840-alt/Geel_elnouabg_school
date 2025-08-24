@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - مدرسة جيل النوابغ</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap"
+      rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Cairo', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: #333;
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      header.topbar {
+        background: #004d99;
+        color: white;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .brand {
+        font-size: 1.5em;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        animation: bounce 2s infinite;
+      }
+
+      nav a {
+        color: white;
+        text-decoration: none;
+        margin-left: 15px;
+        transition: 0.3s;
+      }
+
+      nav a:hover {
+        color: #aee6ff;
+      }
+
+      main.container {
+        padding: 20px;
+        max-width: 1000px;
+        margin: auto;
+      }
+
+      .panel {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        animation: slideUp 0.8s ease-in-out;
+      }
+
+      .panel h2,
+      .panel h3 {
+        margin-top: 0;
+        color: #004d99;
+      }
+
+      .list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .list-item {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.3s;
+      }
+
+      .list-item:hover {
+        background: #f9f9f9;
+        transform: scale(1.02);
+      }
+
+      .btn,
+      .btn-small {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .btn:hover,
+      .btn-small:hover {
+        opacity: 0.9;
+        transform: scale(1.05);
+      }
+
+      .btn-small {
+        padding: 6px 12px;
+        font-size: 0.9em;
+      }
+
+      .form input,
+      .form select,
+      .form textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        transition: 0.3s;
+      }
+
+      .form input:focus,
+      .form select:focus,
+      .form textarea:focus {
+        border-color: #2575fc;
+        box-shadow: 0 0 8px rgba(37, 117, 252, 0.3);
+        outline: none;
+      }
+
+      .grid.two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .muted {
+        color: #666;
+        font-size: 0.9em;
+      }
+
+      footer.footer {
+        background: #004d99;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        margin-top: 20px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes bounce {
+
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+
+        40% {
+          transform: translateY(-8px);
+        }
+
+        60% {
+          transform: translateY(-4px);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <img src="{{ url_for('static', filename='img/جيل النوابغ.png') }}"
+          alt="شعار مدرسة جيل النوابغ">
+        لوحة التحكم
+      </div>
+      <nav>
+        <a href="{{ url_for('home') }}">الرئيسية</a>
+        <a href="{{ url_for('logout') }}">تسجيل الخروج</a>
+
+    </header>
+
+
+
+      </nav>
+
+    <main class="container">
+      {% if user.user_type=="teacher" %}
+      <!-- المدرس -->
+      <section class="panel">
+        <h2>🔎 بحث عن طالب</h2>
+        <form method="POST" action="/search_student">
+          <input name="q" placeholder="اكتب اسم الطالب" value>
+          <button class="btn" type="submit">بحث</button>
+        </form>
+      </section>
+
+      {% for ann in announcements %}
+  <h3>{{ ann.title }}</h3>
+  <p>{{ ann.content }}</p>
+
+  {% if ann.picture %}
+    {% if ann.picture.endswith(('.png', '.jpg', '.jpeg', '.gif')) %}
+      <img src="{{ url_for('uploaded_file', filename=ann.picture) }}" width="200">
+    {% elif ann.picture.endswith(('.mp4', '.avi', '.mov')) %}
+      <video width="320" controls>
+        <source src="{{ url_for('uploaded_file', filename=ann.picture) }}" type="video/mp4">
+        متصفحك لا يدعم الفيديو
+      </video>
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+
+      <section class="panel">
+<section class="panel">
+  <h2>📚 الصفوف</h2>
+  <ul class="list">
+    {% for g in grades %}
+    <li class="list-item">
+      <div>
+        <a href="">{{ g.name }}</a>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <h2>👨‍🎓 الطلاب</h2>
+  <ul class="list">
+    {% if students %}
+    {% for s in students %}
+    <li class="list-item">
+      <div>
+        <div class="title">{{ s.name }}</div>
+        <div class="sub">الصف: {{ s.grade.name }}</div>
+      </div>
+    </li>
+    {% endfor %}
+    {% else %}
+    <p class="muted">⚠️ لم يتم اختيار صف بعد</p>
+    {% endif %}
+  </ul>
+</section>
+
+       
+        </ul>
+      </section>
+
+      <section class="grid two">
+      <article>
+        <h3>📝 إضافة تقرير</h3>
+        <form method="POST" action="{{ url_for('report_add') }}" class="form">
+          <label>الطالب</label>
+          <select name="student_id" required>
+            {% for u in students %}
+            <option value="{{ u.id }}">{{ u.name }}</option>
+            {% endfor %}
+          </select>
+      
+          <label>عنوان التقرير</label>
+          <input type="text" name="title" required>
+      
+          <label>المحتوى</label>
+          <textarea name="content" rows="4" required></textarea>
+      
+          <button class="btn" type="submit">حفظ</button>
+        </form>
+      </article>
+
+        <article>
+
+          <h1>أضافه الإعلانات</h1>
+          <form method="POST" action="/announcement_add" class="form">
+            <label>عنوان الإعلان</label><input name="title" required>
+
+            <label>المحتوى</label><textarea name="content" rows="4"
+              required></textarea>
+            <!-- picture link -->
+            <input type="text" name="picture" placeholder="رابط الصورة"
+              required>
+            <button class="btn" type="submit">حفظ</button>
+          </form>
+            <style>
+              article {
+                background-color: white;
+                padding: 20px;
+              }
+
+              article h1 {
+                font-size: 1.5em;
+                margin-bottom: 10px;
+              }
+
+              article .form input,
+              article .form select,
+              article .form textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                margin-bottom: 10px;
+              }
+
+              article .form button {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 4px;
+                cursor: pointer;
+              }
+
+              article .form button:hover {
+                background-color: #0056b3;
+              }
+            </style>
+          </article>
+          <!-- add pdf study and homework -->
+          <article>
+            <h1>إضافة واجب منزلي</h1>
+            <form method="POST" action="/homework_add" class="form">
+              <label>المادة</label>
+              <select name="subject_id" required>
+                {% for subject in subjects %}
+                <option value="{{ subject.id }}">{{ subject.name }}</option>
+                {% endfor %}
+              </select>
+              <label>عنوان الواجب</label><input name="title" required>
+              <br>
+              <!-- تحديد نوع الملف -->
+              <label>رابط ملف PDF</label><input type="file" accept=".pdf"  name="pdf_link" required>
+              <br>
+              <label>تاريخ التسليم</label><input type="date" name="due_date"
+                required>
+                <br>
+                <select name="grade" id="">
+                  <option value="">— اختر صف —</option>
+                  {% for g in grades %}
+                  <option value="{{ g.name }}">{{ g.name }}</option>
+                  {% endfor %}
+                </select>
+                <br>
+              <button class="btn" type="submit">حفظ</button>
+            </form>
+          </article>
+          <style>
+            article {
+              background-color: white;
+              padding: 20px;
+            }
+
+            article h1 {
+              font-size: 1.5em;
+              margin-bottom: 10px;
+            }
+
+            article .form input,
+            article .form select,
+            article .form textarea {
+              width: 100%;
+              padding: 10px;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              margin-bottom: 10px;
+            }
+
+            article .form button {
+              background-color: #007bff;
+              color: white;
+              border: none;
+              padding: 10px 15px;
+              border-radius: 4px;
+              cursor: pointer;
+            }
+
+            article .form button:hover {
+              background-color: #0056b3;
+            }
+          </style>
+        </section>
+
+        {% elif user.user_type=="student" %}
+        <!-- الطالب -->
+        <section class="panel">
+          <h2>📚 المواد الدراسية</h2>
+          <ul class="list">
+            {% for subject in subjects %}
+            <li class="list-item"><a href>{{ subject.name }}</a></li>
+            <style>
+            .list-item a {
+              text-decoration: none;
+
+              color: #333;
+            }
+
+            .list-item a:hover {
+              scale: 1.1;
+            }
+          </style>
+            {% endfor %}
+          </ul>
+        </section>
+        <section>
+          {% if homeworks %}
+          <h3>📚 الواجبات المنزلية</h3>
+          <ul class="list">
+            {% for homework in homeworks %}
+            <li class="list-item">
+              <div>
+                <div class="title">{{ homework.title }}</div>
+                <div class="sub">المادة: {{ homework.subject.name }}</div>
+              </div>
+              <button class="btn-small view-homework">📄 عرض الواجب</button>
+              <div class="homework-content" style="display: none;">
+                <h4>محتوى الواجب</h4>
+                <iframe src="{{ homework.pdf_link }}" frameborder="0"></iframe>
+              </div>
+            </li>
+            
+            {% endfor %}
+            {% endif %}
+          </ul>
+        </section>
+
+        <section class="panel">
+          <h3 style="margin-top:20px;">📬 تواصل مع المعلمين</h3>
+          {% if teachers %}
+          <select name="teacher_id" id="teacher-select">
+            <option value>اختر معلمًا</option>
+            {% for t in teachers %}
+            <option value="{{ t.id }}">{{ t.name }} ({{ t.subjects }})</option>
+            {% endfor %}
+          </select>
+          {% else %}
+          <p class="muted">⚠️ لا يوجد معلمين مسجلين حاليًا.</p>
+          {% endif %}
+          <style>
+          #teacher-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+          }
+
+          .muted {
+            color: #666;
+            font-size: 0.9em;
+          }
+        </style>
+        </section>
+        {% elif user.user_type=="parent" %}
+        <!-- ولي الأمر -->
+        <section class="panel">
+          <h2>👨‍👩‍👦 أبناؤك</h2>
+          <ul class="list">
+            {% for child in students %}
+            <li class="list-item">
+              <div>
+                <div class="title">{{ child.name }}</div>
+                <div class="sub">الصف: {{ child.grade }}</div>
+              </div>
+
+              <!-- اختيار تقرير -->
+              <select name="report_id" class="report-select">
+                <option value>اختر تقريرًا</option>
+                {% for report in child.reports %}
+                <option value="{{ report.id }}"
+                  data-content="{{ report.content }}">
+                  {{ report.title }}
+                </option>
+                {% endfor %}
+              </select>
+              <button class="btn-small view-report">📄 عرض التقرير</button>
+
+              <!-- مكان عرض التقرير -->
+              <div class="report-content"
+                style="display: none; margin-top:10px;">
+                <h4>عنوان التقرير</h4>
+                <p class="report-title"></p>
+                <h4>محتوى التقرير</h4>
+                <p class="report-body"></p>
+              </div>
+
+            </li>
+
+            {% endfor %}
+          </ul>
+        </section>
+        <script>
+  document.querySelectorAll(".view-report").forEach(function (button) {
+    button.addEventListener("click", function () {
+      const li = this.closest("li");
+      const select = li.querySelector(".report-select");
+      const contentDiv = li.querySelector(".report-content");
+      const selected = select.options[select.selectedIndex];
+
+      if (selected && selected.value) {
+        // هنا هتظهر الداتا
+        contentDiv.style.display = "block";
+        contentDiv.querySelector(".report-title").textContent = selected.text;
+        contentDiv.querySelector(".report-body").textContent = selected.getAttribute("data-content");
+      } else {
+        contentDiv.style.display = "none";
+      }
+    });
+  });
+</script>
+
+        {% endif %}
+
+        <style>
+          /* إعدادات أساسية موجودة عندك بالفعل */
+        
+          body {
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #333;
+            animation: fadeIn 1s ease-in-out;
+          }
+        
+          /* حاويات الشبكة */
+          .grid.two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+          }
+        
+          /* Media Queries للتجاوب */
+          @media (max-width: 992px) {
+            .grid.two {
+              grid-template-columns: 1fr;
+              /* تحوّل الشبكة لعمود واحد على الشاشات المتوسطة */
+            }
+        
+            header.topbar {
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 10px;
+            }
+        
+            nav a {
+              margin-left: 0;
+              margin-right: 15px;
+            }
+        
+            .panel {
+              padding: 15px;
+            }
+          }
+        
+          @media (max-width: 576px) {
+            body {
+              font-size: 14px;
+              /* تصغير الخط على الموبايل */
+            }
+        
+            .brand {
+              font-size: 1.2em;
+            }
+        
+            .btn,
+            .btn-small {
+              padding: 8px 12px;
+              font-size: 0.85em;
+            }
+        
+            header.topbar {
+              padding: 10px;
+            }
+        
+            .panel {
+              padding: 10px;
+            }
+        
+            main.container {
+              padding: 10px;
+            }
+        
+            footer.footer {
+              font-size: 0.85em;
+              padding: 10px;
+            }
+          }
+        </style>
+
+      </main>
+      <footer class="footer">
+        <p>جميع الحقوق محفوظة &copy; 2023 مدرسة جيل النوابغ</p>
+      </footer>
+    </body>
+
+  </html>

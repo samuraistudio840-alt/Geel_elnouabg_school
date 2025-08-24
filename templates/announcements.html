@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>الإعلانات</title>
+  <style>
+    body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
+    .container { width: 80%; margin: auto; }
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    }
+    .card img { max-width: 200px; display: block; margin-top: 10px; }
+    .card video { max-width: 320px; display: block; margin-top: 10px; }
+    .date { color: gray; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📢 الإعلانات</h1>
+
+    {% for ann in announcements %}
+      <div class="card">
+        <h2>{{ ann.title }}</h2>
+        <p>{{ ann.content }}</p>
+        <p class="date">تاريخ النشر: {{ ann.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
+
+        {% if ann.picture %}
+          {% if ann.picture.endswith(('.png', '.jpg', '.jpeg', '.gif')) %}
+            <img src="{{ url_for('uploaded_file', filename=ann.picture) }}" alt="صورة الإعلان">
+          {% elif ann.picture.endswith(('.mp4', '.avi', '.mov')) %}
+            <video controls>
+              <source src="{{ url_for('uploaded_file', filename=ann.picture) }}" type="video/mp4">
+              متصفحك لا يدعم تشغيل الفيديو.
+            </video>
+          {% endif %}
+        {% endif %}
+      </div>
+    {% endfor %}
+
+  </div>
+</body>
+</html>

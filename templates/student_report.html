@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تقارير الطالب</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .topbar {
+      background-color: #fff;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: bold;
+      color: #6a11cb;
+    }
+
+    nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #2575fc;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #6a11cb;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .report-card {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.8s ease;
+    }
+
+    .report-card h3 {
+      margin-top: 0;
+      color: #6a11cb;
+      font-size: 18px;
+    }
+
+    .report-card p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .muted {
+      text-align: center;
+      color: #eee;
+      font-size: 16px;
+      margin-top: 40px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #fff;
+      color: #666;
+      font-size: 14px;
+      margin-top: 60px;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">تقارير {{ student.name }} ({{ student.grade }})</div>
+    <nav>
+      <a href="{{ url_for('dashboard') }}">لوحة التحكم</a>
+      <a href="{{ url_for('logout') }}">تسجيل الخروج</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% if reports %}
+      <div class="report-grid">
+        {% for r in reports %}
+          <article class="report-card">
+            <h3>{{ r.title }}</h3>
+            <p>{{ r.content }}</p>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">لا توجد تقارير لهذا الطالب.</p>
+    {% endif %}
+  </main>
+
+  <footer class="footer">© مدرسة جيل النوابغ</footer>
+</body>
+</html>

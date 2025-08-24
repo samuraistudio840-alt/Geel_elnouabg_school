@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>مدرسة جيل النوابغ</title>
+  <style>
+    *{
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      margin: 0;
+      font-family: "Cairo", sans-serif;
+      background-color: #f5f9fc;
+      color: #222;
+    }
+
+    /* Animations */
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-15px);
+      }
+      60% {
+        transform: translateY(-8px);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes slideIn {
+      from {opacity: 0; transform: translateX(100px);}
+      to {opacity: 1; transform: translateX(0);}
+    }
+.user-info {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.user-info .user-img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-left: 8px;
+  border: 2px solid #7ae582;
+}
+
+.user-info .user-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  vertical-align: middle;
+}
+
+/* Dropdown menu */
+.user-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 60px; /* ينزل من الهيدر */
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  min-width: 180px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.user-dropdown.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.user-dropdown a {
+  display: block;
+  padding: 12px 16px;
+  color: #333;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.user-dropdown a:hover {
+  background: #f0f0f0;
+}
+
+/* Divider */
+.user-dropdown hr {
+  margin: 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
+
+
+
+
+    .topbar {
+      background: linear-gradient(90deg, #006994, #004d61);
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 18px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .topbar img {
+      height: 50px;
+      border-radius: 50%;
+      margin-left: 10px;
+      animation: bounce 2s ease infinite;
+    }
+
+    .topbar a {
+      color: white;
+      text-decoration: none;
+      margin-left: 15px;
+      position: relative;
+    }
+
+    .topbar a::after {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -3px;
+      right: 0;
+      background-color: #7ae582;
+      transition: width 0.3s;
+    }
+
+    .topbar a:hover::after {
+      width: 100%;
+      left: 0;
+      right: auto;
+    }
+
+    .brand {
+      font-weight: bold;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 30px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #7ae582, #00a896);
+      padding: 40px;
+      border-radius: 20px;
+      color: white;
+      text-align: center;
+      margin-bottom: 30px;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 36px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    .panel {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      animation: slideIn 1.2s ease-in-out;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      color: #004d61;
+    }
+
+    .list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .list-item {
+      padding: 15px;
+      border-bottom: 1px solid #ddd;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .list-item .title {
+      font-weight: bold;
+      color: #006994;
+    }
+
+    .list-item .sub {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .muted {
+      color: #888;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 15px;
+      background: #004d61;
+      color: white;
+      border-top: 3px solid #7ae582;
+      position: relative;
+      z-index: 1;
+      margin-top: 30px;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='img/جيل النوابغ.png') }}" alt="شعار المدرسة">
+       مدرسة جيل النوابغ
+    </div>
+    <nav>
+      <a href="{{ url_for('home') }}">الرئيسية</a>
+      {% if current_user==true %}
+      <div class="user-info">
+        <span class="user-name">{{ user.name }}</span>
+        <span class="arrow">&#9660;</span>
+        {% if user.type=="teacher" %}
+        <div class="user-dropdown">
+          <a href="{{ url_for('dashboard') }}" style="color: #333;">لوحة التحكم</a>
+          <hr>
+          <a href="{{ url_for('logout') }}" style="color: #333;">تسجيل الخروج</a>
+        </div>
+        {% elif user.type=="student" %}
+        <div class="user-dropdown">
+          <a href="{{ url_for('dashboard') }}" style="color: #333;">مذاكرة</a>
+          <hr>
+          <a href="{{ url_for('logout') }}" style="color: #333;">تسجيل الخروج</a>
+        </div>
+        {% elif user.type=="parent" %}
+        <div class="user-dropdown">
+          <a href="{{ url_for('dashboard') }}" style="color: #333;">متابعة الطلاب</a>
+          <hr>
+          <a href="{{ url_for('logout') }}" style="color: #333;">تسجيل الخروج</a>
+        </div>
+        {% elif user.type=="admin" %}
+        <div class="user-dropdown">
+          <a href="{{ url_for('users') }}" style="color: #333;">لوحة التحكم بالمدرسة</a>
+          <hr>
+          <a href="{{ url_for('logout') }}" style="color: #333;">تسجيل الخروج</a>
+        </div>
+        {% endif %}
+      </div>
+
+      {% else %}
+        <a href="{{ url_for('login') }}">تسجيل الدخول</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>أهلًا بكم في مدرسة جيل النوابغ</h1>
+      <p>متابعة الطلاب، التقارير، الإعلانات، والملفات في مكان واحد.</p>
+    </section>
+
+    <section class="panel">
+      <h2>📢 الإعلانات</h2>
+      
+      {% if announcements %}
+        <ul class="list">
+          {% for a in announcements %}
+            <li class="list-item">
+              <div class="title">{{ a.title }}</div>
+            
+              <style>
+                img {
+                  max-width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                }
+              </style>
+              <div class="sub">{{ a.content }}</div>
+                <img src="{{ a.picture }}" alt="">
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">لا توجد إعلانات بعد.</p>
+      {% endif %}
+     
+    </section>
+  </main>
+
+  <footer class="footer">© مدرسة جيل النوابغ</footer>
+<script>
+  const userInfo = document.querySelector('.user-info');
+  if (userInfo) {
+    userInfo.addEventListener('click', function (e) {
+      e.stopPropagation();
+      this.querySelector('.user-dropdown').classList.toggle('show');
+    });
+
+    document.addEventListener('click', function () {
+      const dropdown = document.querySelector('.user-dropdown');
+      if (dropdown) dropdown.classList.remove('show');
+    });
+  }
+</script>
+
+
+</body>
+</html>

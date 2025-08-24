@@ -1,0 +1,85 @@
+<!-- search_user -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% if user %}
+        <h2>نتائج البحث</h2>
+        <p>اسم المستخدم: {{ user.name }}</p>
+        <p>البريد الإلكتروني: {{ user.email }}</p>
+        <p>رقم الهاتف: {{ user.phone }}</p>
+        <p>النوع: {{ user.type }}</p>
+    {% else %}
+        <h2>لا توجد نتائج</h2>
+    {% endif %}
+
+    <a href="/users">عودة إلى قائمة المستخدمين</a>
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            color: #333;
+        }
+
+        header {
+            background: #004d99;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #004d99;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #004d99;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .form input,
+        .form select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+    </style>
+</body>
+</html>

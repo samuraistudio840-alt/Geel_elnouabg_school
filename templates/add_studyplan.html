@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>📖 الخطة الدراسية - {{ stage }}</h2>
+
+{% if current_user.role == 'staff' %}
+<a href="{{ url_for('add_studyplan') }}">➕ إضافة خطة جديدة</a>
+{% endif %}
+
+<h3>📅 الجدول الأسبوعي</h3>
+<table border="1" cellpadding="5">
+    <tr>
+        <th>اليوم</th>
+        <th>المادة / النشاط</th>
+        <th>ملاحظات</th>
+        {% if current_user.role == 'staff' %}
+        <th>إجراءات</th>
+        {% endif %}
+    </tr>
+    {% for p in weekly %}
+    <tr>
+        <td>{{ p.day_or_date }}</td>
+        <td>{{ p.title }}</td>
+        <td>{{ p.notes }}</td>
+        {% if current_user.role == 'staff' %}
+        <td>
+            <a href="{{ url_for('edit_studyplan', plan_id=p.id) }}">✏️ تعديل</a> | 
+            <a href="{{ url_for('delete_studyplan', plan_id=p.id) }}" onclick="return confirm('هل أنت متأكد من الحذف؟');">🗑 حذف</a>
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>📅 الجدول الشهري</h3>
+<table border="1" cellpadding="5">
+    <tr>
+        <th>التاريخ</th>
+        <th>المادة / النشاط</th>
+        <th>ملاحظات</th>
+        {% if current_user.role == 'staff' %}
+        <th>إجراءات</th>
+        {% endif %}
+    </tr>
+    {% for p in monthly %}
+    <tr>
+        <td>{{ p.day_or_date }}</td>
+        <td>{{ p.title }}</td>
+        <td>{{ p.notes }}</td>
+        {% if current_user.role == 'staff' %}
+        <td>
+            <a href="{{ url_for('edit_studyplan', plan_id=p.id) }}">✏️ تعديل</a> | 
+            <a href="{{ url_for('delete_studyplan', plan_id=p.id) }}" onclick="return confirm('هل أنت متأكد من الحذف؟');">🗑 حذف</a>
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>📅 الخطة السنوية</h3>
+<table border="1" cellpadding="5">
+    <tr>
+        <th>الشهر</th>
+        <th>المادة / النشاط</th>
+        <th>ملاحظات</th>
+        {% if current_user.role == 'staff' %}
+        <th>إجراءات</th>
+        {% endif %}
+    </tr>
+    {% for p in yearly %}
+    <tr>
+        <td>{{ p.day_or_date }}</td>
+        <td>{{ p.title }}</td>
+        <td>{{ p.notes }}</td>
+        {% if current_user.role == 'staff' %}
+        <td>
+            <a href="{{ url_for('edit_studyplan', plan_id=p.id) }}">✏️ تعديل</a> | 
+            <a href="{{ url_for('delete_studyplan', plan_id=p.id) }}" onclick="return confirm('هل أنت متأكد من الحذف؟');">🗑 حذف</a>
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

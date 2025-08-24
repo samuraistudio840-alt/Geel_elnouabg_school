@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}تقارير الطلاب{% endblock %}
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    direction: rtl;
+    margin: 0;
+    padding: 0;
+  }
+
+  h2 {
+    text-align: center;
+    color: #fff;
+    margin: 30px 0;
+    font-size: 26px;
+  }
+
+  .list {
+    list-style: none;
+    padding: 0;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .list-item {
+    background-color: #fff;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeIn 0.8s ease;
+  }
+
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  .sub {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .btn-small {
+    background-color: #6a11cb;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.3s ease;
+  }
+
+  .btn-small:hover {
+    background-color: #2575fc;
+  }
+
+  .muted {
+    text-align: center;
+    color: #eee;
+    font-size: 16px;
+    margin-top: 40px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+<h2>تقارير الطلاب</h2>
+
+{% if reports %}
+  <ul class="list">
+    {% for r in reports %}
+      <li class="list-item">
+        <div>
+          <div class="title">{{ r.title }}</div>
+          <div class="sub">طالب: {{ r.student.name }} — صف: {{ r.student.grade }}</div>
+        </div>
+        <a class="btn-small" href="{{ url_for('student_report', student_id=r.student.id) }}">فتح تقرير الطالب</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="muted">لا توجد تقارير حتى الآن.</p>
+{% endif %}
+{% endblock %}

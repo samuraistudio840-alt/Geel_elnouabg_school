@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مدرسة جيل النوابغ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>/* ========== Reset ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Cairo", sans-serif;
+}
+
+/* ========== Body ========== */
+body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========== Navbar ========== */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.6);
+    padding: 15px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar .logo {
+    display: flex;
+    align-items: center;
+}
+
+.navbar .logo img {
+    width: 45px;
+    height: 45px;
+    margin-right: 10px;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.navbar ul li a:hover {
+    color: #00d4ff;
+}
+
+/* ========== Container ========== */
+.container {
+    flex: 1;
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    backdrop-filter: blur(8px);
+}
+
+/* ========== Footer ========== */
+footer {
+    background: rgba(0,0,0,0.7);
+    padding: 15px;
+    text-align: center;
+    font-size: 14px;
+    margin-top: auto;
+}
+
+/* ========== Animations ========== */
+.navbar ul li a {
+    position: relative;
+}
+
+.navbar ul li a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: #00d4ff;
+    left: 0;
+    bottom: -5px;
+    transition: width 0.3s ease;
+}
+
+.navbar ul li a:hover::after {
+    width: 100%;
+}
+
+.container {
+    animation: fadeIn 1.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+    <header>
+        <h1>مدرسة جيل النوابغ</h1>
+        <nav>
+            <a href="/">الرئيسية</a>
+            <a href="/login">تسجيل الدخول</a>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

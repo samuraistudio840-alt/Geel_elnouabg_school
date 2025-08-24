@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>لوحة إدارة المدرسة</title>
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+        <style>
+            :root {
+                --brand: #004d99;
+                --bg: #f5f6fa;
+            }
+
+            * {
+                box-sizing: border-box
+            }
+
+            body {
+                font-family: 'Cairo', sans-serif;
+                margin: 0;
+                background: var(--bg);
+                color: #333
+            }
+
+            header {
+                background: var(--brand);
+                color: #fff;
+                padding: 16px;
+                text-align: center;
+                font-size: 1.5rem
+            }
+
+            main {
+                max-width: 1200px;
+                margin: 24px auto;
+                padding: 16px
+            }
+
+            section {
+                background: #fff;
+                border-radius: 14px;
+                box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
+                margin-bottom: 24px;
+                padding: 18px
+            }
+
+            h2 {
+                margin: 0 0 12px;
+                color: var(--brand)
+            }
+
+            .grid {
+                display: grid;
+                gap: 16px
+            }
+
+            .g-2 {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .g-3 {
+                grid-template-columns: repeat(3, 1fr)
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+                border-radius: 10px;
+                overflow: hidden
+            }
+
+            th,
+            td {
+                border: 1px solid #eee;
+                padding: 10px;
+                text-align: center
+            }
+
+            th {
+                background: var(--brand);
+                color: #fff
+            }
+
+            tr:nth-child(even) {
+                background: #fafafa
+            }
+
+            label {
+                display: block;
+                margin: 8px 0 4px
+            }
+
+            input,
+            select,
+            textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 10px
+            }
+
+            .row {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px
+            }
+
+            .btn {
+                background: linear-gradient(135deg, #6a11cb, #2575fc);
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                padding: 10px 16px;
+                cursor: pointer;
+                transition: .2s;
+                margin-top: 8px
+            }
+
+            .btn:hover {
+                transform: translateY(-1px);
+                opacity: .95
+            }
+
+            .muted {
+                color: #666;
+                font-size: .9rem
+            }
+
+            .tools {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                flex-wrap: wrap;
+                margin-top: 8px
+            }
+
+            .mini {
+                padding: 6px 10px;
+                border-radius: 8px;
+                font-size: .9rem
+            }
+
+            .danger {
+                background: #e53935
+            }
+
+            .success {
+                background: #2e7d32
+            }
+
+            .info {
+                background: #2962ff
+            }
+
+            .flash {
+                padding: 10px;
+                background: #e0f7fa;
+                border: 1px solid #4dd0e1;
+                border-radius: 8px;
+                margin: 10px 0;
+                color: #006064
+            }
+
+            @media (max-width:900px) {
+                .row {
+                    grid-template-columns: 1fr
+                }
+
+                .g-2,
+                .g-3 {
+                    grid-template-columns: 1fr
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <header>لوحة إدارة المدرسة 👩‍🏫👨‍🎓</header>
+        <main>
+
+            {# رسائل فلاش #}
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="flash">
+                {% for m in messages %}<p>{{ m }}</p>{% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+
+            <table>
+                <tr>
+                    <th>#</th>
+                    <th>الاسم</th>
+                    <th>البريد</th>
+                    <th>الكود</th>
+                    <th>الابن</th>
+                    <th>Actions</th>
+                </tr>
+                {% for p in parents %}
+                <tr id="parent-{{ p.id }}">
+                    <td>{{ p.id }}</td>
+                    <td class="editable" data-field="name">{{ p.name }}</td>
+                    <td class="editable" data-field="email">{{ p.email or '-' }}</td>
+                    <td class="editable" data-field="code">{{ p.code or '-' }}</td>
+                    <td class="editable" data-field="student_id">{% if p.students %}{{ p.students[0].name }}{% else
+                        %}-{% endif %}</td>
+                    <td>
+                        <button class="edit-btn btn mini" onclick="enableEdit('parent-{{ p.id }}')">Edit</button>
+                        <button class="save-btn btn success mini" style="display:none;"
+                            onclick="saveEdit('parent-{{ p.id }}','parent')">Save</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            <!-- أولياء الأمور -->
+            <section id="parents">
+
+                <h2>👨‍👩‍👧‍👦 أولياء الأمور</h2>
+                <div class="grid g-2">
+                    <div>
+                        <form method="POST" action="/add_user">
+                            <label>الاسم</label><input name="name" required>
+                            <input type="text" name="type" value="parent" required style="display:none;">
+                            <label>البريد (اختياري)</label><input type="email" name="email">
+                            <label>الهاتف</label><input name="phone" required>
+                            <label>الكود (اختياري لتسجيل الدخول)</label><input name="code">
+                            <label>الابن</label>
+                            <select name="student_id" required>
+                                {% for s in students %}
+                                <option value="{{ s.id }}">{{ s.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn success" type="submit">➕ إضافة ولي أمر</button>
+                        </form>
+                    </div>
+                    <div>
+                        <form method="POST" action="/parents/delete">
+                            <label>حذف ولي أمر</label>
+                            <select name="parent_id" required>
+                                {% for p in parents %}
+                                <option value="{{ p.id }}">{{ p.name }} — {{ p.phone }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn danger mini" type="submit">🗑️ حذف</button>
+                        </form>
+                        <p class="muted">ملحوظة: حذف ولي الأمر لا يحذف الأبناء، لكن سيجعل حقل parent_id للطلاب مرتبطين
+                            به فارغًا.</p>
+                    </div>
+                </div>
+
+
+                <table>
+                    <tr>
+                        <th>#</th>
+                        <th>الاسم</th>
+                        <th>الصف</th>
+                        <th>البريد</th>
+                        <th>الكود</th>
+                        <th>وليّ الأمر</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for s in students %}
+                    <tr id="student-{{ s.id }}">
+                        <td>{{ s.id }}</td>
+                        <td class="editable" data-field="name">{{ s.name }}</td>
+                        <td class="editable" data-field="grade">{{ s.grade or '-' }}</td>
+                        <td class="editable" data-field="email">{{ s.email or '-' }}</td>
+                        <td class="editable" data-field="code">{{ s.code or '-' }}</td>
+                        <td class="editable" data-field="parent_id">{% if s.parent %}{{ s.parent.name }}{% else %}-{%
+                            endif %}</td>
+                        <td>
+                            <button class="edit-btn btn mini" onclick="enableEdit('student-{{ s.id }}')">Edit</button>
+                            <button class="save-btn btn success mini" style="display:none;"
+                                onclick="saveEdit('student-{{ s.id }}','student')">Save</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                <!-- الطلاب -->
+                <section id="students">
+                    <h2>🎒 الطلاب</h2>
+                    <div class="grid g-2">
+                        <div>
+                            <form method="POST" action="/add_user" id="addStudentForm">
+                                <label>الاسم</label><input name="name" required>
+                                <div class="row">
+                                    <div>
+                                        <label>الصف</label>
+                                        <select name="grade">
+                                            <option value="">— بدون —</option>
+                                            {% for g in grades %}
+                                            <option value="{{ g.name }}">{{ g.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div style="display:none;">
+                                        <label></label><input name="type" value="student" required>
+                                    </div>
+                                    <div>
+                                        <label>الكود</label><input name="code" required type="text">
+                                    </div>
+                                    <div>
+                                        <label>البريد (اختياري)</label><input type="email" name="email">
+                                    </div>
+                                    <div>
+                                        <label>وليّ الأمر</label>
+                                        <select name="parent_id">
+                                            <option value="">— بدون —</option>
+                                            {% for p in parents %}
+                                            <option value="{{ p.id }}">{{ p.name }} — {{ p.phone }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <button class="btn success" type="submit">➕ إضافة طالب</button>
+                            </form>
+                        </div>
+                        <div>
+                            <form method="POST" action="/delete_user">
+                                <label>حذف طالب</label>
+                                <input type="text" name="type" value="student" required style="display:none;">
+                                {% for s in students %}
+
+                                <input type="text" name="id" value="{{ s.id }}" style="display: none;">
+
+                                <select name="student_id" required>
+                                    <option value="{{ s.id }}">{{ s.name }} — {{ s.grade or '-' }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn danger mini" type="submit">🗑️ حذف</button>
+                            </form>
+                        </div>
+                    </div>
+
+
+                </section>
+                <table>
+                    <tr>
+                        <th>#</th>
+                        <th>الاسم</th>
+                        <th>البريد</th>
+                        <th>رقم الهاتف</th>
+
+                        <th>الكود</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for t in teachers %}
+                    <tr id="teacher-{{ t.id }}">
+                        <td>{{ t.id }}</td>
+                        <td class="editable" data-field="name">{{ t.name }}</td>
+                        <td class="editable" data-field="email">{{ t.email or '-' }}</td>
+                        <td class="editable" data-field="phone">{{ t.phone or '-' }}</td>
+                        <td class="editable" data-field="code">{{ t.code or '-' }}</td>
+                        <td>
+                            <button class="edit-btn btn mini" onclick="enableEdit('teacher-{{ t.id }}')">Edit</button>
+                            <button class="save-btn btn success mini" style="display:none;"
+                                onclick="saveEdit('teacher-{{ t.id }}','teacher')">Save</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <!-- المعلمون -->
+                <section id="teachers">
+                    <h2>🧑‍🏫 المعلمون</h2>
+                    <div class="grid g-2">
+                        <div>
+                            <form method="POST" action="/add_user">
+                                <label>الاسم</label><input name="name" required>
+                                <div class="row">
+                                    <div style="display:none;"><label></label><input name="type" value="teacher"
+                                            required></div>
+                                    <div><label>الهاتف</label><input name="phone" required></div>
+                                    <div><label>البريد (اختياري)</label><input type="email" name="email"></div>
+                                    <div><label>الكود (اختياري)</label><input name="code"></div>
+
+                                    <div><label>المواد </label>
+                                        <select name="subjects" id="">
+                                            {% for subject in subjects %}
+                                            <option value="{{ subject.id }}">{{ subject.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <button class="btn success" type="submit">➕ إضافة معلم</button>
+                            </form>
+                        </div>
+                        <div>
+                            <form method="POST" action="/teachers/delete">
+                                <label>حذف معلم</label>
+                                <select name="teacher_id" required>
+                                    {% for t in teachers %}
+                                    <option value="{{ t.id }}">{{ t.name }} — {{ t.phone }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn danger mini" type="submit">🗑️ حذف</button>
+                            </form>
+                        </div>
+                    </div>
+
+
+                </section>
+
+                <table>
+                    <tr>
+                        <th>#</th>
+                        <th>الاسم</th>
+                        <th>البريد</th>
+                        <th>رقم الهاتف</th>
+                        <th>الكود</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for a in admins %}
+                    <tr id="admin-{{ a.id }}">
+                        <td>{{ a.id }}</td>
+                        <td class="editable" data-field="name">{{ a.name }}</td>
+                        <td class="editable" data-field="email">{{ a.email or '-' }}</td>
+                        <td class="editable" data-field="phone">{{ a.phone or '-' }}</td>
+                        <td class="editable" data-field="code">{{ a.code or '-' }}</td>
+                        <td>
+                            <button class="edit-btn btn mini" onclick="enableEdit('admin-{{ a.id }}')">Edit</button>
+                            <button class="save-btn btn success mini" style="display:none;"
+                                onclick="saveEdit('admin-{{ a.id }}','admin')">Save</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <!-- الأدمن -->
+                <section id="admins">
+                    <h2>🛡️ الأدمن</h2>
+                    <div class="grid g-2">
+                        <div>
+                            <form method="POST" action="/add_user">
+                                <label>الاسم</label><input name="name" required>
+                                <div class="row">
+                                    <div style="display:none;"><label></label><input name="type" value="admin" required>
+                                    </div>
+                                    <div><label>الهاتف</label><input name="phone" required></div>
+                                    <div><label>البريد (اختياري)</label><input type="email" name="email"></div>
+                                    <div><label>الكود (اختياري)</label><input name="code"></div>
+                                </div>
+                                <button class="btn success" type="submit">➕ إضافة أدمن</button>
+                            </form>
+                        </div>
+                        <div>
+                            <form method="POST" action="/admins/delete">
+                                <label>حذف أدمن</label>
+                                <select name="admin_id" required>
+                                    {% for a in admins %}
+                                    <option value="{{ a.id }}">{{ a.name }} — {{ a.phone }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn danger mini" type="submit">🗑️ حذف</button>
+                            </form>
+                        </div>
+                    </div>
+
+
+                </section>
+
+                <!-- المواد (اختياري) -->
+                <table>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم المادة</th>
+                        <th>الكود</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for sub in subjects %}
+                    <tr id="subject-{{ sub.id }}">
+                        <td>{{ sub.id }}</td>
+                        <td class="editable" data-field="name">{{ sub.name }}</td>
+                        <td class="editable" data-field="code">{{ sub.code }}</td>
+                        <td>
+                            <button class="edit-btn btn mini" onclick="enableEdit('subject-{{ sub.id }}')">Edit</button>
+                            <button class="save-btn btn success mini" style="display:none;"
+                                onclick="saveEdit('subject-{{ sub.id }}','subject')">Save</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <section id="subjects">
+                    <h2>📚 المواد</h2>
+                    <div class="grid g-2">
+                        <div>
+                            <form method="POST" action="/add_subject">
+                                <label>اسم المادة</label><input name="name" required>
+                                <label>الكود</label><input name="code" required>
+                                <button class="btn success" type="submit">➕ إضافة مادة</button>
+                            </form>
+                        </div>
+                        <div>
+                            <form method="POST" action="/subjects/delete">
+                                <label>حذف مادة</label>
+                                <select name="subject_id" required>
+                                    {% for sub in subjects %}
+                                    <option value="{{ sub.id }}">{{ sub.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn danger mini" type="submit">🗑️ حذف</button>
+                            </form>
+                        </div>
+                    </div>
+
+
+                </section>
+
+        </main>
+
+        <script>
+            // تنظيف بسيط قبل الإرسال: ممنوع مسافات في خانات البريد
+            document.addEventListener('submit', (e) => {
+                const email = e.target.querySelector('input[type="email"]');
+                if (email) { email.value = email.value.trim(); }
+            });
+        </script>
+        <script>
+            function enableEdit(rowId) {
+                const row = document.getElementById(rowId);
+                row.querySelectorAll(".editable").forEach(cell => {
+                    const value = cell.innerText;
+                    const field = cell.dataset.field;
+                    cell.innerHTML = `<input type="text" value="${value}" data-field="${field}">`;
+                });
+                row.querySelector(".save-btn").style.display = "inline-block";
+                row.querySelector(".edit-btn").style.display = "none";
+            }
+
+            function saveEdit(rowId, type) {
+                const row = document.getElementById(rowId);
+                const data = {};
+                row.querySelectorAll("input").forEach(input => {
+                    const field = input.dataset.field;
+                    data[field] = input.value;
+                });
+
+                fetch(`/edit_${type}/${rowId}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                }).then(res => res.json()).then(resp => {
+                    if (resp.success) {
+                        row.querySelectorAll(".editable").forEach(cell => {
+                            const field = cell.querySelector("input").dataset.field;
+                            cell.innerText = data[field];
+                        });
+                        row.querySelector(".save-btn").style.display = "none";
+                        row.querySelector(".edit-btn").style.display = "inline-block";
+                        alert("تم حفظ التعديلات!");
+                    }
+                });
+            }
+        </script>
+
+    </body>
+
+</html>

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>✏️ تعديل الخطة الدراسية</h2>
+
+<form method="POST">
+    <label>المرحلة:</label>
+    <input type="text" name="stage" value="{{ plan.stage }}" required><br><br>
+
+    <label>نوع الخطة:</label>
+    <select name="plan_type" required>
+        <option value="weekly" {% if plan.plan_type == 'weekly' %}selected{% endif %}>أسبوعي</option>
+        <option value="monthly" {% if plan.plan_type == 'monthly' %}selected{% endif %}>شهري</option>
+        <option value="yearly" {% if plan.plan_type == 'yearly' %}selected{% endif %}>سنوي</option>
+    </select><br><br>
+
+    <label>اليوم / التاريخ:</label>
+    <input type="text" name="day_or_date" value="{{ plan.day_or_date }}" required><br><br>
+
+    <label>المادة / النشاط:</label>
+    <input type="text" name="title" value="{{ plan.title }}" required><br><br>
+
+    <label>ملاحظات:</label>
+    <textarea name="notes">{{ plan.notes }}</textarea><br><br>
+
+    <button type="submit">تحديث</button>
+</form>
+{% endblock %}

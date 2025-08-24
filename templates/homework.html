@@ -1,0 +1,44 @@
+<h2>📚 قائمة الواجبات</h2>
+
+<form method="POST">
+    <label>الصف:</label>
+    <select name="grade">
+        <option value="">-- اختر الصف --</option>
+        <option value="Pre-KG">Pre-KG</option>
+        <option value="KG1">KG1</option>
+        <option value="KG2">KG2</option>
+        <option value="1 Primary">1 Primary</option>
+        <option value="2 Primary">2 Primary</option>
+        <option value="3 Primary">3 Primary</option>
+        <option value="4 Primary">4 Primary</option>
+        <option value="5 Primary">5 Primary</option>
+        <option value="6 Primary">6 Primary</option>
+        <option value="1 Prep">1 Prep</option>
+        <option value="2 Prep">2 Prep</option>
+        <option value="3 Prep">3 Prep</option>
+    </select>
+
+    <label>المادة:</label>
+    <input type="text" name="subject" placeholder="مثال: Math, Science">
+
+    <button type="submit">🔍 بحث</button>
+</form>
+
+<hr>
+
+{% for hw in homeworks %}
+  <div class="homework-box">
+    <h3>{{ hw.title }}</h3>
+    <p><b>الصف:</b> {{ hw.grade }}</p>
+    <p><b>المادة:</b> {{ hw.subject }}</p>
+    <p><b>الوصف:</b> {{ hw.description }}</p>
+    <p><b>تاريخ التسليم:</b> {{ hw.due_date }}</p>
+    <p><b>أُضيف بتاريخ:</b> {{ hw.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+
+    {% if hw.file_path %}
+      <a href="{{ url_for('static', filename='uploads/' + hw.file_path) }}" target="_blank">📂 تحميل الملف</a>
+    {% endif %}
+
+    <a href="{{ url_for('delete_homework', hw_id=hw.id) }}" onclick="return confirm('هل تريد حذف هذا الواجب؟')">🗑️ حذف</a>
+  </div>
+{% endfor %}
